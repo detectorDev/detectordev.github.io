@@ -1,0 +1,15 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "stud.finder.wall.scanner.stud.detector.gold.usa",
+      "sha256_cert_fingerprints": [
+        "E9:F1:7D:C7:56:0F:4A:3F:F2:61:D5:F8:9D:D8:DD:16:46:CD:3A:93:5A:41:0B:DC:38:16:14:E8:56:25:02:55"
+      ]
+    }
+  }
+]
