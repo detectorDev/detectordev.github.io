@@ -1,0 +1,66 @@
+name: Sync CAS app-ads.txt
+
+on:
+  schedule:
+    - cron: "17 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  sync-and-deploy:
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Download repository
+        uses: actions/checkout@v6
+
+      - name: Download current CAS file
+        shell: bash
+        run: |
+          curl \
+            --fail \
+            --location \
+            --retry 3 \
+            "https://raw.githubusercontent.com/cleveradssolutions/App-ads.txt/main/app-ads.txt" \
+            --output app-ads.txt.new
+
+          test -s app-ads.txt.new
+          mv app-ads.txt.new app-ads.txt
+
+      - name: Save updated file
+        shell: bash
+        run: |
+          if git diff --quiet -- app-ads.txt; then
+            echo "The file is already current"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+            git add app-ads.txt
+            git commit -m "Update app-ads.txt from CAS"
+            git push
+          fi
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload website
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: "."
+
+      - name: Deploy website
+        id: deployment
+        uses: actions/deploy-pages@v4
